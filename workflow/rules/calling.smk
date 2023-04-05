@@ -53,23 +53,35 @@ rule mutect2:
         "v1.25.0/bio/gatk/mutect"
 
 
-rule combine_calls:
+# rule combine_calls:
+#     input:
+#         ref="resources/genome.fasta",
+#         gvcfs=expand(
+#             "results/called/{sample}.{{contig}}.g.vcf.gz", sample=samples.index
+#         ),
+#     output:
+#         gvcf="results/called/all.{contig}.g.vcf.gz",
+#     log:
+#         "logs/gatk/combinegvcfs.{contig}.log",
+#     wrapper:
+#          "v1.25.0/bio/gatk/combinegvcfs"
+
+rule mergevcfs:
     input:
-        ref="resources/genome.fasta",
-        gvcfs=expand(
+        vcfs=expand(
             "results/called/{sample}.{{contig}}.g.vcf.gz", sample=samples.index
         ),
     output:
-        gvcf="results/called/all.{contig}.g.vcf.gz",
+        "results/called/all.{contig}.vcf.gz",
     log:
-        "logs/gatk/combinegvcfs.{contig}.log",
+        "logs/gatk/mergevcfs.{contig}.log",
     wrapper:
-         "v1.25.0/bio/gatk/combinegvcfs"
+        "v1.25.0/bio/picard/mergevcfs"
 
 rule genotype_variants:
     input:
         ref="resources/genome.fasta",
-        gvcf="results/called/all.{contig}.g.vcf.gz",
+        gvcf="results/called/all.{contig}.vcf.gz",
     output:
         vcf=temp("results/genotyped/all.{contig}.vcf.gz"),
     params:
