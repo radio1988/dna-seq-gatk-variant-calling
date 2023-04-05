@@ -11,26 +11,46 @@ if "restrict-regions" in config["processing"]:
             "bedextract {wildcards.contig} {input} > {output}"
 
 
-rule call_variants:
+# rule call_variants:
+#     input:
+#         bam=get_sample_bams,
+#         ref="resources/genome.fasta",
+#         idx="resources/genome.dict",
+#         known="resources/variation.noiupac.vcf.gz",
+#         tbi="resources/variation.noiupac.vcf.gz.tbi",
+#         regions=(
+#             "results/called/{contig}.regions.bed"
+#             if config["processing"].get("restrict-regions")
+#             else []
+#         ),
+#     output:
+#         gvcf=protected("results/called/{sample}.{contig}.g.vcf.gz"),
+#     log:
+#         "logs/gatk/haplotypecaller/{sample}.{contig}.log",
+#     params:
+#         extra=get_call_variants_params,
+#     wrapper:
+#         "0.59.0/bio/gatk/haplotypecaller"
+
+
+rule mutect2:
     input:
-        bam=get_sample_bams,
-        ref="resources/genome.fasta",
-        idx="resources/genome.dict",
-        known="resources/variation.noiupac.vcf.gz",
-        tbi="resources/variation.noiupac.vcf.gz.tbi",
-        regions=(
+        fasta="resources/genome.fasta",
+        map=get_sample_bams,
+        germline="resources/variation.noiupac.vcf.gz",
+        intervals=(
             "results/called/{contig}.regions.bed"
             if config["processing"].get("restrict-regions")
             else []
         ),
     output:
-        gvcf=protected("results/called/{sample}.{contig}.g.vcf.gz"),
+        vcf=protected("results/called/{sample}.{contig}.g.vcf.gz"),
     log:
-        "logs/gatk/haplotypecaller/{sample}.{contig}.log",
+        "logs/gatk/mutect2/{sample}.{contig}.log",
     params:
         extra=get_call_variants_params,
     wrapper:
-        "0.59.0/bio/gatk/haplotypecaller"
+        "v1.25.0/bio/gatk/mutect"
 
 
 rule combine_calls:
