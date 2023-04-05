@@ -64,8 +64,7 @@ rule combine_calls:
     log:
         "logs/gatk/combinegvcfs.{contig}.log",
     wrapper:
-        "0.74.0/bio/gatk/combinegvcfs"
-
+         "v1.25.0/bio/gatk/combinegvcfs"
 
 rule genotype_variants:
     input:
