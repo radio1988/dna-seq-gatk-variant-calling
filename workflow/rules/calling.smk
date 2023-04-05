@@ -48,7 +48,7 @@ rule mutect2:
     log:
         "logs/gatk/mutect2/{sample}.{contig}.log",
     params:
-        extra=get_call_variants_params,
+        extra=get_mutect2_params,
     wrapper:
         "v1.25.0/bio/gatk/mutect"
 
